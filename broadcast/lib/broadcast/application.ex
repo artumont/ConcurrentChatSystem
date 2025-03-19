@@ -9,11 +9,8 @@ defmodule Broadcast.Application do
   def start(_type, _args) do
     children = [
       BroadcastWeb.Telemetry,
-      Broadcast.Repo,
       {DNSCluster, query: Application.get_env(:broadcast, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Broadcast.PubSub},
-      # Start the Finch HTTP client for sending emails
-      {Finch, name: Broadcast.Finch},
       # Start a worker by calling: Broadcast.Worker.start_link(arg)
       # {Broadcast.Worker, arg},
       # Start to serve requests, typically the last entry
