@@ -5,7 +5,7 @@ description = "Default template for PDM package"
 authors = [
     {name = "artumont", email = "197291181+artumont@users.noreply.github.com"},
 ]
-dependencies = []
+dependencies = ["fastapi>=0.115.11"]
 requires-python = "==3.12.*"
 readme = "README.md"
 license = {text = "MIT"}
