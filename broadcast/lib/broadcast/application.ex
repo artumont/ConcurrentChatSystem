@@ -4,7 +4,7 @@ defmodule Broadcast.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Phoenix.PubSub, name: Broadcast.Pubsub},
+      {Phoenix.PubSub, name: Broadcast.PubSub},
       # @note: This is the endpoint that will be used to broadcast messages
       BroadcastWeb.Endpoint
     ]

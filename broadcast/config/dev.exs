@@ -13,8 +13,13 @@ config :broadcast, BroadcastWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
+  check_origin: false,
   secret_key_base: "T2VemCKi7BsBUxdYPjE0NC7PSQls2Y9l/N9rGqPVu73qS0qCzNL1iAIfMM3jXeX5",
-  watchers: []
+  watchers: [],
+  websocket: [
+    timeout: 45_000,
+    transport_log: :debug
+  ]
 
 # ## SSL Support
 #
