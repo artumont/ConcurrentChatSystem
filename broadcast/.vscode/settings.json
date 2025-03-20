@@ -1,0 +1,11 @@
+{
+    "[elixir]": {
+        "files.trimTrailingWhitespace": false
+    },
+    "[exs]": {
+        "files.trimTrailingWhitespace": false
+    },
+    "[heex]": {
+        "files.trimTrailingWhitespace": false
+    }
+}

@@ -1,9 +1,9 @@
 defmodule Broadcast do
-  @moduledoc """
-  Broadcast keeps the contexts that define your domain
-  and business logic.
-
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
-  """
+  def subscribe(room) do 
+    Phoenix.PubSub.subscribe(Broadcast.PubSub, room)
+  end
+  
+  def unsubscribe(room) do
+    Phoenix.PubSub.unsubscribe(Broadcast.PubSub, room)
+  end
 end
