@@ -16,8 +16,11 @@ export default function ChatInterface() {
     }, [joinRoom]);
     
     return (
-        <div className="flex flex-col items-center w-full min-h-screen text-white bg-background">
-            <h1 className="text-2xl font-bold">Chat Interface</h1>
+        <div className="flex flex-row items-center w-full min-h-screen text-white bg-background">
+            <div className="flex flex-col items-center">
+                {/* Chat stuff here */}
+            </div>
+            {/* User list here */}
         </div>
     )
 }
