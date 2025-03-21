@@ -9,9 +9,8 @@ interface SocketContextType {
     socket: Socket | null;
     channel: Channel | null;
     isTyping: boolean;
-    knownUsers: string[];
+    knownUsers: { username: string; isTyping: boolean }[];
     messageHistory: { user: string; content: string }[];
-    typingUsers: { user: string; isTyping: boolean }[];
     joinRoom: () => boolean;
     sendMessage: (message: string) => void;
     setTyping: (isTyping: boolean) => void;
@@ -23,7 +22,6 @@ export const SocketContext = createContext<SocketContextType>({
     isTyping: false,
     knownUsers: [],
     messageHistory: [],
-    typingUsers: [], 
     joinRoom: () => false,
     sendMessage: () => { },
     setTyping: () => { }
@@ -32,12 +30,11 @@ export const SocketContext = createContext<SocketContextType>({
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [channel, setChannel] = useState<Channel | null>(null);
+    const [knownUsers, setKnownUsers] = useState<{ username: string; isTyping: boolean }[]>([]);
     const [isTyping, setIsTyping] = useState(false);
     const { showError, showSuccess } = usePopups();
 
-    const messageHistory: { user : string, content: string }[] = [];
-    const typingUsers: { user: string; isTyping: boolean }[] = [];
-    const knownUsers: string[] = [];
+    const [messageHistory, setMessageHistory] = useState<{ user: string; content: string }[]>([]);
     let typingTimeout: NodeJS.Timeout | null = null;
     const typingDelay = 3000;
 
@@ -77,25 +74,32 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     });
                     
                     newChannel.on("new_message", (payload) => {
-                        messageHistory.push({ user: payload.username, content: payload.content });
+                        if (!knownUsers.some(user => user.username === payload.username)) {
+                            setKnownUsers(prevUsers => [...prevUsers, { username: payload.username, isTyping: false }]);
+                        }
+
+                        setMessageHistory(prev => [...prev, { user: payload.username, content: payload.content }]);
                         console.log("New message received:", payload.content);
                     });
     
                     newChannel.on("typing", (payload) => {
-                        if (!typingUsers.some(user => user.user === payload.username)) {
-                            typingUsers.push({ user: payload.username, isTyping: payload.is_typing });
-                        } else {
-                            const user = typingUsers.find(user => user.user === payload.username);
-                            if (user) {
-                                user.isTyping = payload.is_typing;
+                        setKnownUsers(prev => {
+                            const userExists = prev.some(user => user.username === payload.username);
+                            if (!userExists) {
+                                return [...prev, { username: payload.username, isTyping: payload.is_typing }];
                             }
-                        }
+                            return prev.map(user => 
+                                user.username === payload.username 
+                                    ? { ...user, isTyping: payload.is_typing }
+                                    : user
+                            );
+                        });
                     });
     
                     newChannel.on("user_join", (payload) => {
                         console.log("User join event received:", payload);
-                        if (!knownUsers.includes(payload.username) && payload.username !== username) {
-                            knownUsers.push(payload.username);
+                        if (!knownUsers.some(user => user.username === payload.username)) {
+                            setKnownUsers(prev => [...prev, { username: payload.username, isTyping: false }]);
                             console.log("User joined:", payload.username);
                             showSuccess(`${payload.username} joined the room`);
                         }
@@ -106,12 +110,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
                     newChannel.on("user_left", (payload) => {
                         console.log("User leave event received:", payload);
-                        const index = knownUsers.indexOf(payload.username);
-                        if (index !== -1) {
-                            knownUsers.splice(index, 1);
-                            console.log("User left:", payload.username);
-                            showSuccess(`${payload.username} left the room`);
-                        }
+                        setKnownUsers(prev => prev.filter(user => user.username !== payload.username));
+                        console.log("User left:", payload.username);
+                        showSuccess(`${payload.username} left the room`);
                     });
 
                     newChannel.join()
@@ -157,7 +158,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             channel.push("new_message", { content: message })
                 .receive("ok", (resp) => { console.log("Message sent successfully", resp) 
                     showSuccess("Message sent successfully");
-                    messageHistory.push({ user: Cookies.get("username") || "Unknown", content: message });
+                    setMessageHistory(prev => [...prev, { user: Cookies.get("username") || "Unknown", content: message }]);
                 })
                 .receive("error", (resp) => { console.log("Unable to send message", resp) 
                     showError("Unable to send message");
@@ -193,7 +194,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             isTyping,
             knownUsers,
             messageHistory,
-            typingUsers,
             joinRoom,
             sendMessage,
             setTyping
