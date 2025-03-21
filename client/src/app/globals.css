@@ -1,9 +1,13 @@
 @import "tailwindcss";
 
 :root {
-    /* @todo: Add theme styles */
+    --color-background: #070707;
+    --color-surface: #141414;
+    --color-accent: #b8b8b8;
 }
 
-@theme inline {
-    /* @todo: Add theme styles */
+@theme {
+    --color-background: var(--color-background);
+    --color-surface: var(--color-surface);
+    --color-accent: var(--color-accent);
 }
