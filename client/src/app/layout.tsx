@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+import { SocketProvider } from "@/context/Socket";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
+import { PopupsProvider } from "@/context/Popups";
 
 const jetBrainsMono = JetBrains_Mono({
     subsets: ["latin"],
@@ -22,7 +25,12 @@ export default function RootLayout({
             <body
                 className={`${jetBrainsMono.variable} antialiased`}
             >
-                {children}
+                <PopupsProvider>
+                    <SocketProvider>
+                        {children}
+                        <Toaster />
+                    </SocketProvider>
+                </PopupsProvider>
             </body>
         </html>
     );

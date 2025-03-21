@@ -1,5 +1,6 @@
 'use client'
 
+import ChatInterface from "@/components/ChatInterface";
 import UsernamePrompt from "@/components/UserPrompt";
 import Cookies from "js-cookie";
 
@@ -9,6 +10,7 @@ export default function Home() {
             {!Cookies.get("username") && !Cookies.get("room") && (
                 <UsernamePrompt />
             )}
+            <ChatInterface />
         </main>
     );
 }
