@@ -12,3 +12,22 @@
     --color-surface: var(--color-surface);
     --color-accent: var(--color-accent);
 }
+
+.clean-scrollbar {
+    scrollbar-color: var(--color-accent) transparent;
+    scrollbar-width: thin;
+}
+
+.clean-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.clean-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--color-accent);
+    border-radius: 4px;
+}
+
+.clean-scrollbar::-webkit-scrollbar-track {
+    background-color: transparent;
+}

@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react"
 import { useSocket } from "@/context/Socket"
-import { usePopups } from "@/context/Popups";
 import ChatMessages from "./ChatMessages";
 import UserList from "./UserList";
+import ChatInput from "./ChatInput";
 
 export default function ChatInterface() {
     const { joinRoom } = useSocket();
@@ -18,12 +18,12 @@ export default function ChatInterface() {
     }, [joinRoom]);
     
     return (
-        <div className="flex flex-row w-full min-h-screen text-white bg-background">
-            <div className="flex flex-row w-full h-full items-center">
+        <div className="flex flex-col w-full h-screen text-white bg-background">
+            <div className="flex flex-row flex-1 overflow-hidden">
                 <ChatMessages />
                 <UserList />
             </div>
-            {/* Chat input and other components will go here */}
+            <ChatInput />
         </div>
     )
 }

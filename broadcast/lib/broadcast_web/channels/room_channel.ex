@@ -45,7 +45,7 @@ defmodule BroadcastWeb.RoomChannel do
   end
   
   # @note: This handles typing events
-  def handle_in("typing", %{"is_typing" => is_typing}, socket) do
+  def handle_in("user_typing", %{"is_typing" => is_typing}, socket) do
     try do 
       broadcast!(socket, "user_typing", %{
         username: socket.assigns.username,

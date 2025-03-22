@@ -19,15 +19,15 @@ export const PopupsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             duration: 3000,
             position: "top-right",
             style: {
-                background: "#333",
-                color: "#fff",
+                background: "#181818",
+                color: "#b8b8b8",
                 fontSize: "16px",
                 padding: "16px",
                 borderRadius: "8px",
             },
             iconTheme: {
-                primary: "#fff",
-                secondary: "#FF0000",
+                primary: "#ff3535",
+                secondary: "#00FF00",
             },
         });
     }
@@ -37,14 +37,14 @@ export const PopupsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             duration: 3000,
             position: "top-right",
             style: {
-                background: "#333",
-                color: "#fff",
+                background: "#181818",
+                color: "#b8b8b8",
                 fontSize: "16px",
                 padding: "16px",
                 borderRadius: "8px",
             },
             iconTheme: {
-                primary: "#fff",
+                primary: "#272727",
                 secondary: "#00FF00",
             },
         });

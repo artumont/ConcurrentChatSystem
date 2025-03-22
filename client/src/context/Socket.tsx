@@ -10,7 +10,7 @@ interface SocketContextType {
     channel: Channel | null;
     isTyping: boolean;
     knownUsers: { username: string; isTyping: boolean }[];
-    messageHistory: { user: string; content: string }[];
+    messageHistory: { username: string; content: string, timestamp: number }[];
     joinRoom: () => boolean;
     sendMessage: (message: string) => void;
     setTyping: (isTyping: boolean) => void;
@@ -34,9 +34,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [isTyping, setIsTyping] = useState(false);
     const { showError, showSuccess } = usePopups();
 
-    const [messageHistory, setMessageHistory] = useState<{ user: string; content: string }[]>([]);
+    const [messageHistory, setMessageHistory] = useState<{ username: string; content: string, timestamp: number }[]>([]);
     let typingTimeout: NodeJS.Timeout | null = null;
-    const typingDelay = 3000;
+    const typingDelay = 1000;
 
     const joinRoom = () => {
         const room = Cookies.get("room");
@@ -74,30 +74,46 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                     });
                     
                     newChannel.on("new_message", (payload) => {
-                        if (!knownUsers.some(user => user.username === payload.username)) {
-                            setKnownUsers(prevUsers => [...prevUsers, { username: payload.username, isTyping: false }]);
-                        }
-
-                        setMessageHistory(prev => [...prev, { user: payload.username, content: payload.content }]);
-                        console.log("New message received:", payload.content);
-                    });
-    
-                    newChannel.on("typing", (payload) => {
-                        setKnownUsers(prev => {
-                            const userExists = prev.some(user => user.username === payload.username);
-                            if (!userExists) {
-                                return [...prev, { username: payload.username, isTyping: payload.is_typing }];
+                        setMessageHistory(prev => [...prev, { 
+                            username: payload.username, 
+                            content: payload.content, 
+                            timestamp: payload.timestamp 
+                        }]);
+                    
+                        if (payload.username === Cookies.get("username")) return;
+                    
+                        setKnownUsers(prevUsers => {
+                            if (!prevUsers.some(user => user.username === payload.username)) {
+                                return [...prevUsers, { username: payload.username, isTyping: false }];
                             }
-                            return prev.map(user => 
-                                user.username === payload.username 
-                                    ? { ...user, isTyping: payload.is_typing }
-                                    : user
-                            );
+                            return prevUsers;
+                        });
+                    });
+
+                    newChannel.on("user_typing", (payload) => {
+                        if (payload.username == Cookies.get("username")) return;
+
+                        setKnownUsers(prev => {
+                            const userIndex = prev.findIndex(user => user.username === payload.username);
+                            
+                            if (userIndex === -1) {
+                                return [...prev, { username: payload.username, isTyping: payload.is_typing }];
+                            } else {
+                                const updatedUsers = [...prev];
+                                updatedUsers[userIndex] = {
+                                    ...updatedUsers[userIndex],
+                                    isTyping: payload.is_typing
+                                };
+                                return updatedUsers;
+                            }
                         });
                     });
     
                     newChannel.on("user_join", (payload) => {
                         console.log("User join event received:", payload);
+
+                        if (payload.username == Cookies.get("username")) return;
+
                         if (!knownUsers.some(user => user.username === payload.username)) {
                             setKnownUsers(prev => [...prev, { username: payload.username, isTyping: false }]);
                             console.log("User joined:", payload.username);
@@ -155,12 +171,15 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const sendMessage = (message: string) => {
         if (channel) {
-            channel.push("new_message", { content: message })
-                .receive("ok", (resp) => { console.log("Message sent successfully", resp) 
+            channel.push("new_message", { 
+                content: message,
+            })
+                .receive("ok", (resp) => { 
+                    console.log("Message sent successfully", resp);
                     showSuccess("Message sent successfully");
-                    setMessageHistory(prev => [...prev, { user: Cookies.get("username") || "Unknown", content: message }]);
                 })
-                .receive("error", (resp) => { console.log("Unable to send message", resp) 
+                .receive("error", (resp) => { 
+                    console.log("Unable to send message", resp);
                     showError("Unable to send message");
                 });
         }
@@ -168,22 +187,28 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const setTyping = (isTyping: boolean) => {
         if (channel) {
-            channel.push("typing", { typing: isTyping })
-                .receive("ok", (resp) => {
-                    console.log("Typing status sent successfully", resp)
-                    setIsTyping(isTyping);
-                    if (isTyping) {
-                        if (typingTimeout) {
-                            clearTimeout(typingTimeout);
-                        }
-                        typingTimeout = setTimeout(() => {
-                            setTyping(false);
-                        }, typingDelay);
-                    }
-                })
-                .receive("error", (resp) => { console.log("Unable to send typing status", resp) 
-                    showError("Unable to send typing status");
-                });
+            const sendTypingStatus = (status: boolean) => {
+                channel.push("user_typing", { is_typing: status })
+                    .receive("ok", (resp) => {
+                        console.log("Typing status sent successfully", resp);
+                        setIsTyping(status);
+                    })
+                    .receive("error", (resp) => {
+                        console.log("Unable to send typing status", resp);
+                        showError("Unable to send typing status");
+                    });
+            };
+    
+            sendTypingStatus(isTyping);
+    
+            if (isTyping) {
+                if (typingTimeout) {
+                    clearTimeout(typingTimeout);
+                }
+                typingTimeout = setTimeout(() => {
+                    sendTypingStatus(false);
+                }, typingDelay);
+            }
         }
     }
 

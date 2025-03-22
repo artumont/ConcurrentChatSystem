@@ -10,7 +10,9 @@ export default function Home() {
             {!Cookies.get("username") && !Cookies.get("room") && (
                 <UsernamePrompt />
             )}
-            <ChatInterface />
+            {Cookies.get("username") && Cookies.get("room") && (
+                <ChatInterface />
+            )}
         </main>
     );
 }
