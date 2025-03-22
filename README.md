@@ -23,7 +23,7 @@ A modern real-time chat application built with Phoenix WebSockets and Next.js, e
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/artu/ConcurrentChatSystem
+git clone https://github.com/artumont/ConcurrentChatSystem
 cd ConcurrentChatSystem
 ```
 
