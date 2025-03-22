@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Chrome Instance 1",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-1"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Chrome Instance 2",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-2"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Both Chrome Instances",
+            "configurations": ["Chrome Instance 1", "Chrome Instance 2"]
+        }
+    ]
+}
