@@ -7,7 +7,7 @@
             "name": "Chrome Instance 1",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}",
-            "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-1"
+            "userDataDir": "${workspaceFolder}/.vscode/debug/chrome-debug-1"
         },
         {
             "type": "chrome",
@@ -15,7 +15,7 @@
             "name": "Chrome Instance 2",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}",
-            "userDataDir": "${workspaceFolder}/.vscode/chrome-debug-2"
+            "userDataDir": "${workspaceFolder}/.vscode/debug/chrome-debug-2"
         }
     ],
     "compounds": [
