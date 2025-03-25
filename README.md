@@ -1,4 +1,4 @@
-# 💬 Concurrent Chat System
+# 💬 ConcurrentChatSystem
 
 A modern real-time chat application built with Phoenix WebSockets and Next.js, enabling concurrent chat rooms with real-time updates.
 
