@@ -2,6 +2,8 @@
 
 A modern real-time chat application built with Phoenix WebSockets and Next.js, enabling concurrent chat rooms with real-time updates.
 
+(Mainly made to practice elixir)
+
 ## 💻 Technologies
 
 - Next.js 15.2.3
